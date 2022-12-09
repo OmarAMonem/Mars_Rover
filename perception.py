@@ -3,19 +3,38 @@ import cv2
  
 # Identify pixels above the threshold
 # Threshold of RGB > 160 does a nice job of identifying ground pixels only
-def color_thresh(img, rgb_thresh=(160, 160, 160)):
+def color_thresh(img, rgb_thresh=(160, 160, 160), flag="navigable_terrain"):
     # Create an array of zeros same xy size as img, but single channel
     color_select = np.zeros_like(img[:,:,0])
     # Require that each pixel be above all three threshold values in RGB
     # above_thresh will now contain a boolean array with "True"
     # where threshold was met
-    above_thresh = (img[:,:,0] > rgb_thresh[0]) \
-                & (img[:,:,1] > rgb_thresh[1]) \
-                & (img[:,:,2] > rgb_thresh[2])
-    # Index the array of zeros with the boolean array and set to 1
-    color_select[above_thresh] = 1
+    if flag == "navigable_terrain":
+        above_thresh = (img[:, :, 0] > rgb_thresh[0]) \
+                       & (img[:, :, 1] > rgb_thresh[1]) \
+                       & (img[:, :, 2] > rgb_thresh[2])
+        # Index the array of zeros with the boolean array and set to 1
+        color_select[above_thresh] = 1
+        return color_select
+    elif flag == "obstacle":
+        below_thresh = (img[:, :, 0] < rgb_thresh[0]) \
+                       & (img[:, :, 1] < rgb_thresh[1]) \
+                       & (img[:, :, 2] < rgb_thresh[2])
+        # Index the array of zeros with the boolean array and set to 1
+        color_select[below_thresh] = 1   
     # Return the binary image
     return color_select
+def rock_thresh(img):
+    # Convert BGR to HSV
+    hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV, 3)
+    
+    # Define range of yellow colors in HSV
+    lower_yellow = np.array([20, 150, 100], dtype='uint8')
+    upper_yellow = np.array([50, 255, 255], dtype='uint8')
+    
+    # Threshold the HSV image to get only yellow colors
+    mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
+    return mask 
 
 # Define a function to convert from image coords to rover coords
 def rover_coords(binary_img):
@@ -111,11 +130,30 @@ def perception_step(Rover):
     #########################################################
     
     # 3) Apply color threshold to identify navigable terrain/obstacles/rock samples
+    #########################################################
+    #           Coded by: Habiba ahmed                       #
+    #########################################################
+    navigable_map = color_thresh(warped)
+    obstacle_map = color_thresh(warped, flag="obstacle")
+    rock_map = rock_thresh(warped)
+    #########################################################
+    #                                                       #
+    #########################################################    
+    
     # 4) Update Rover.vision_image (this will be displayed on left side of screen)
         # Example: Rover.vision_image[:,:,0] = obstacle color-thresholded binary image
         #          Rover.vision_image[:,:,1] = rock_sample color-thresholded binary image
         #          Rover.vision_image[:,:,2] = navigable terrain color-thresholded binary image
+    #########################################################
+    #           Coded by: Habiba ahmed                       #
+    #########################################################
+    Rover.vision_image[:, :, 0] = obstacle_map * 255
+    Rover.vision_image[:, :, 1] = rock_map * 255
+    Rover.vision_image[:, :, 2] = navigable_map * 255  
 
+    #########################################################
+    #                                                       #
+    ######################################################### 
     # 5) Convert map image pixel values to rover-centric coords
     # 6) Convert rover-centric pixel values to world coordinates
     # 7) Update Rover worldmap (to be displayed on right side of screen)
