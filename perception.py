@@ -105,7 +105,7 @@ def perception_step(Rover):
     #########################################################
     #           Coded by: Shiry Ezzat                       #
     #########################################################
-    warped, mask = perspect_transform(image, source, destination)
+    warped = perspect_transform(image, source, destination)
     #########################################################
     #                                                       #
     #########################################################
