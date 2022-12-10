@@ -178,7 +178,7 @@ def perception_step(Rover):
     world_size = Rover.worldmap.shape[0]
     
     x_world, y_world = pix_to_world(x_pixel, y_pixel, x_position, y_position, yaw, world_size, scale)
-    obstacle_x_world, obstacle_y_world = pix_to_world(obs_xpix, obs_ypix, x_pos, y_pos, yaw, world_size, scale)
+    obstacle_x_world, obstacle_y_world = pix_to_world(obs_xpix, obs_ypix, x_position, y_position, yaw, world_size, scale)
     rock_x_world, rock_y_world = pix_to_world(rock_x, rock_y, x_position, y_position, yaw, world_size, scale)
     
     #########################################################
