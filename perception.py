@@ -24,10 +24,14 @@ def color_thresh(img, rgb_thresh=(160, 160, 160), flag="navigable_terrain"):
         color_select[below_thresh] = 1   
     # Return the binary image
     return color_select
+
+#########################################################
+#           Coded by: Habiba ahmed                       #
+#########################################################
 def rock_thresh(img):
     # Convert BGR to HSV
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV, 3)
-    
+    #The mask converts the RGB values to HSV vales to detect rocks more accurately.HSV based color space is more accurate compared to RGB color space in autonomous system.
     # Define range of yellow colors in HSV
     lower_yellow = np.array([10, 100, 100], dtype='uint8')
     upper_yellow = np.array([255, 255, 255], dtype='uint8')
@@ -35,6 +39,9 @@ def rock_thresh(img):
     # Threshold the HSV image to get only yellow colors
     mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
     return mask 
+#########################################################
+#                                                       #
+#########################################################
 
 # Define a function to convert from image coords to rover coords
 def rover_coords(binary_img):
@@ -135,8 +142,11 @@ def perception_step(Rover):
     #########################################################
     #           Coded by: Habiba ahmed                       #
     #########################################################
+    #navigable_map: Identify the ground on which the rover can move, uses the default flag
     navigable_map = color_thresh(warped)
+    #obstacle_map: Identify the obstacles that the rover should avoid, uses the obstacle flag
     obstacle_map = color_thresh(warped, flag="obstacle")
+    #rock_map = Identify the rocks that the rover should grip
     rock_map = rock_thresh(warped)
     #########################################################
     #                                                       #
@@ -149,9 +159,9 @@ def perception_step(Rover):
     #########################################################
     #           Coded by: Habiba ahmed                       #
     #########################################################
-    Rover.vision_image[:, :, 0] = obstacle_map * 255
-    Rover.vision_image[:, :, 1] = rock_map * 255
-    Rover.vision_image[:, :, 2] = navigable_map * 255  
+    Rover.vision_image[:, :, 0] = obstacle_map * 255  #Red channel
+    Rover.vision_image[:, :, 1] = rock_map * 255   #Green channel
+    Rover.vision_image[:, :, 2] = navigable_map * 255  #Blue channel
 
     #########################################################
     #                                                       #
