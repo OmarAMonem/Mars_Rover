@@ -98,7 +98,10 @@ def pix_to_world(xpix, ypix, xpos, ypos, yaw, world_size, scale):
 # Define a function to perform a perspective transform
 def perspect_transform(img, src, dst):
            
-    M = cv2.getPerspectiveTransform(src, dst)
+    M = cv2.getPerspectiveTransform(src, dst)   # M is the mask that openCV generats to transform from the 
+                                                #   four points I provided (src) to the four arbitary points (dst)
+                                                #   Note that: four points on (dst) must form a square shape
+                                                # Then when appling the musk on any image the eyebird view will be generated
     warped = cv2.warpPerspective(img, M, (img.shape[1], img.shape[0]))# keep same size as input image
     
     return warped
@@ -133,14 +136,18 @@ def perception_step(Rover):
     #########################################################
     #           Coded by: Shiry Ezzat                       #
     #########################################################
+
+    # This function generates a filter to be applied on the source image and its output is the eyebird view
+    # the function generates the filter by giving it four points
     warped = perspect_transform(image, source, destination)
+    
     #########################################################
     #                                                       #
     #########################################################
     
     # 3) Apply color threshold to identify navigable terrain/obstacles/rock samples
     #########################################################
-    #           Coded by: Habiba ahmed                       #
+    #           Coded by: Habiba Ahmed                      #
     #########################################################
     #navigable_map: Identify the ground on which the rover can move, uses the default flag
     navigable_map = color_thresh(warped)
@@ -157,7 +164,7 @@ def perception_step(Rover):
         #          Rover.vision_image[:,:,1] = rock_sample color-thresholded binary image
         #          Rover.vision_image[:,:,2] = navigable terrain color-thresholded binary image
     #########################################################
-    #           Coded by: Habiba ahmed                       #
+    #           Coded by: Habiba Ahmed                      #
     #########################################################
     Rover.vision_image[:, :, 0] = obstacle_map * 255  #Red channel
     Rover.vision_image[:, :, 1] = rock_map * 255   #Green channel
@@ -201,6 +208,7 @@ def perception_step(Rover):
     # Example: Rover.worldmap[obstacle_y_world, obstacle_x_world, 0] += 1
     #          Rover.worldmap[rock_y_world, rock_x_world, 1] += 1
     #          Rover.worldmap[navigable_y_world, navigable_x_world, 2] += 1
+    
     #########################################################
     #           Coded by: Maram Ahmed                      #
     #########################################################
@@ -211,6 +219,9 @@ def perception_step(Rover):
             Rover.worldmap[obstacle_y_world, obstacle_x_world, 0] += 255
             Rover.worldmap[rock_y_world, rock_x_world, 1] += 255
 
+    #########################################################
+    #                                                       #
+    ######################################################### 
 
     # 8) Convert rover-centric pixel positions to polar coordinates
     # Update Rover pixel distances and angles
@@ -223,6 +234,10 @@ def perception_step(Rover):
 
     Rover.nav_dists, Rover.nav_angles = to_polar_coords(x_pixel, y_pixel)
     _, Rover.rock_angles = to_polar_coords(rock_x, rock_y)
+
+    #########################################################
+    #                                                       #
+    ######################################################### 
     
     
     return Rover
