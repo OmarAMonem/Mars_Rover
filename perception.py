@@ -159,8 +159,8 @@ def perception_step(Rover):
     #########################################################
     #           Coded by: Engy Mohamed                      #
     #########################################################
-    xpix, ypix = rover_coords(navigable_map)
-    obs_xpix, obs_ypix = rover_coords(obstacle_map)
+    x_pixel, y_pixel = rover_coords(navigable_map)
+    obs_xpixel, obs_ypixel = rover_coords(obstacle_map)
     rock_x, rock_y = rover_coords(rock_map)
     
     #########################################################
@@ -171,8 +171,14 @@ def perception_step(Rover):
     #########################################################
     #           Coded by: Engy Mohamed                      #
     #########################################################
-    x_world, y_world = pix_to_world(xpix, ypix, xpos, ypos, yaw, world_size, scale)
-    obstacle_x_world, obstacle_y_world = pix_to_world(obs_xpix, obs_ypix, xpos, ypos, yaw, world_size, scale)
+    
+    # Rover state info
+    x_position, y_position = Rover.position
+    yaw, roll, pitch = Rover.yaw, Rover.roll, Rover.pitch
+    world_size = Rover.worldmap.shape[0]
+    
+    x_world, y_world = pix_to_world(x_pixel, y_pixel, x_position, y_position, yaw, world_size, scale)
+    obstacle_x_world, obstacle_y_world = pix_to_world(obs_xpix, obs_ypix, x_pos, y_pos, yaw, world_size, scale)
     rock_x_world, rock_y_world = pix_to_world(rock_x, rock_y, xpos, ypos, yaw, world_size, scale)
     
     #########################################################
