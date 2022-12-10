@@ -26,11 +26,11 @@ def color_thresh(img, rgb_thresh=(160, 160, 160), flag="navigable_terrain"):
     return color_select
 def rock_thresh(img):
     # Convert BGR to HSV
-    hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV, 3)
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV, 3)
     
     # Define range of yellow colors in HSV
-    lower_yellow = np.array([20, 150, 100], dtype='uint8')
-    upper_yellow = np.array([50, 255, 255], dtype='uint8')
+    lower_yellow = np.array([10, 100, 100], dtype='uint8')
+    upper_yellow = np.array([255, 255, 255], dtype='uint8')
     
     # Threshold the HSV image to get only yellow colors
     mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
@@ -108,7 +108,7 @@ def perception_step(Rover):
     #########################################################
     image = Rover.img
     dst_size = 5
-    scale = 2 * dst_size
+    scale = (2 * dst_size)**2
     bottom_offset = 6
     source = np.float32([[14, 140], [301, 140], [200, 96], [118, 96]])
     destination = np.float32([[image.shape[1] / 2 - dst_size, image.shape[0] - bottom_offset],
@@ -173,7 +173,7 @@ def perception_step(Rover):
     #########################################################
     
     # Rover state info
-    x_position, y_position = Rover.position
+    x_position, y_position = Rover.pos
     yaw, roll, pitch = Rover.yaw, Rover.roll, Rover.pitch
     world_size = Rover.worldmap.shape[0]
     
@@ -193,12 +193,12 @@ def perception_step(Rover):
     #           Coded by: Maram Ahmed                      #
     #########################################################
 
- if roll <= 1 or roll >= 359:  # 1, 359
+    if roll <= 1 or roll >= 359:  # 1, 359
         if pitch <= 1 or pitch >= 359:
             Rover.worldmap[y_world, x_world, 2] += 255
             Rover.worldmap[obstacle_y_world, obstacle_x_world, 0] += 255
             Rover.worldmap[rock_y_world, rock_x_world, 1] += 255
-s
+
 
     # 8) Convert rover-centric pixel positions to polar coordinates
     # Update Rover pixel distances and angles
@@ -209,8 +209,8 @@ s
     #           Coded by: Maram Ahmed                      #
     #########################################################
 
-  Rover.nav_dists, Rover.nav_angles = to_polar_coords(xpix, ypix)
-  _, Rover.rock_angles = to_polar_coords(rock_x, rock_y)
+    Rover.nav_dists, Rover.nav_angles = to_polar_coords(x_pixel, y_pixel)
+    _, Rover.rock_angles = to_polar_coords(rock_x, rock_y)
     
     
     return Rover
