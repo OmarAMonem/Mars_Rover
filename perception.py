@@ -161,14 +161,23 @@ def perception_step(Rover):
     #########################################################
     xpix, ypix = rover_coords(navigable_map)
     obs_xpix, obs_ypix = rover_coords(obstacle_map)
-    rock_x, rock_y = rover_coords(rock_map
+    rock_x, rock_y = rover_coords(rock_map)
     
     #########################################################
     #                                                       #
     ######################################################### 
     
     # 6) Convert rover-centric pixel values to world coordinates
+    #########################################################
+    #           Coded by: Engy Mohamed                      #
+    #########################################################
+    x_world, y_world = pix_to_world(xpix, ypix, xpos, ypos, yaw, world_size, scale)
+    obstacle_x_world, obstacle_y_world = pix_to_world(obs_xpix, obs_ypix, xpos, ypos, yaw, world_size, scale)
+    rock_x_world, rock_y_world = pix_to_world(rock_x, rock_y, xpos, ypos, yaw, world_size, scale)
     
+    #########################################################
+    #                                                       #
+    ######################################################### 
     
     # 7) Update Rover worldmap (to be displayed on right side of screen)
         # Example: Rover.worldmap[obstacle_y_world, obstacle_x_world, 0] += 1
