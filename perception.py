@@ -175,9 +175,16 @@ def perception_step(Rover):
     ######################################################### 
     
     # 5) Convert map image pixel values to rover-centric coords
+    
     #########################################################
     #           Coded by: Engy Mohamed                      #
     #########################################################
+    
+    #This Part use the function “rover coords” which take a 
+    #binary image “image coords” and convert it to the 
+    #rover position after changing the origin of the 
+    #image returning x_pixel and y_pixel after editing
+    
     x_pixel, y_pixel = rover_coords(navigable_map)
     obs_xpixel, obs_ypixel = rover_coords(obstacle_map)
     rock_x, rock_y = rover_coords(rock_map)
@@ -187,11 +194,17 @@ def perception_step(Rover):
     ######################################################### 
     
     # 6) Convert rover-centric pixel values to world coordinates
+    
     #########################################################
     #           Coded by: Engy Mohamed                      #
     #########################################################
     
+    # This part use the function “pix_to_world” which apply 
+    #the rotation, translation and clipping to the rover 
+    #coordinates by the yaw angle and return the pixels 
+    #after rotating (to be projected on the world map)
     # Rover state info
+    
     x_position, y_position = Rover.pos
     yaw, roll, pitch = Rover.yaw, Rover.roll, Rover.pitch
     world_size = Rover.worldmap.shape[0]
