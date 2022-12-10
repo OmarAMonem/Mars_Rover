@@ -106,11 +106,13 @@ def perception_step(Rover):
     #########################################################
     #           Coded by: Omar Osama                        #
     #########################################################
-    image = Rover.img
-    dst_size = 5
-    scale = (2 * dst_size)**2
-    bottom_offset = 6
-    source = np.float32([[14, 140], [301, 140], [200, 96], [118, 96]])
+    image = Rover.img       # getting image from rover camera
+    dst_size = 5            # setting destination size to 5 pixels
+    scale = 2 * dst_size    # scale equal to twice the destination size 
+    bottom_offset = 6       
+    source = np.float32([[14, 140], [301, 140], [200, 96], [118, 96]]) # grid coordinates from calibration image
+
+    # calculating the destination points to perform prespective transform
     destination = np.float32([[image.shape[1] / 2 - dst_size, image.shape[0] - bottom_offset],
                               [image.shape[1] / 2 + dst_size, image.shape[0] - bottom_offset],
                               [image.shape[1] / 2 + dst_size, image.shape[0] - 2 * dst_size - bottom_offset],
