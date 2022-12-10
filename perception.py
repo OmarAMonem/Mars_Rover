@@ -186,16 +186,31 @@ def perception_step(Rover):
     ######################################################### 
     
     # 7) Update Rover worldmap (to be displayed on right side of screen)
-        # Example: Rover.worldmap[obstacle_y_world, obstacle_x_world, 0] += 1
-        #          Rover.worldmap[rock_y_world, rock_x_world, 1] += 1
-        #          Rover.worldmap[navigable_y_world, navigable_x_world, 2] += 1
+    # Example: Rover.worldmap[obstacle_y_world, obstacle_x_world, 0] += 1
+    #          Rover.worldmap[rock_y_world, rock_x_world, 1] += 1
+    #          Rover.worldmap[navigable_y_world, navigable_x_world, 2] += 1
+    #########################################################
+    #           Coded by: Maram Ahmed                      #
+    #########################################################
+
+ if roll <= 0.7 or roll >= 359.5:  # 0.7, 259.5
+        if pitch <= 0.7 or pitch >= 359.5:
+            Rover.worldmap[y_world, x_world, 2] += 255
+            Rover.worldmap[obstacle_y_world, obstacle_x_world, 0] += 255
+            Rover.worldmap[rock_y_world, rock_x_world, 1] += 255
+
 
     # 8) Convert rover-centric pixel positions to polar coordinates
     # Update Rover pixel distances and angles
-        # Rover.nav_dists = rover_centric_pixel_distances
-        # Rover.nav_angles = rover_centric_angles
-    
- 
+    # Rover.nav_dists = rover_centric_pixel_distances
+    # Rover.nav_angles = rover_centric_angles
+
+    #########################################################
+    #           Coded by: Maram Ahmed                      #
+    #########################################################
+
+  Rover.nav_dists, Rover.nav_angles = to_polar_coords(xpix, ypix)
+  _, Rover.rock_angles = to_polar_coords(rock_x, rock_y)
     
     
     return Rover
