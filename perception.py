@@ -213,6 +213,7 @@ def perception_step(Rover):
     #           Coded by: Maram Ahmed                      #
     #########################################################
 
+    #Draw worldmap only if roll and pitch are within range to prevent errors
     if roll <= 1 or roll >= 359:  # 1, 359
         if pitch <= 1 or pitch >= 359:
             Rover.worldmap[y_world, x_world, 2] += 255
@@ -232,6 +233,7 @@ def perception_step(Rover):
     #           Coded by: Maram Ahmed                      #
     #########################################################
 
+    #Saving polar coordinates to rover object
     Rover.nav_dists, Rover.nav_angles = to_polar_coords(x_pixel, y_pixel)
     _, Rover.rock_angles = to_polar_coords(rock_x, rock_y)
 
