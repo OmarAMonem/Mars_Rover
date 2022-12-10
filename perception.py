@@ -193,12 +193,12 @@ def perception_step(Rover):
     #           Coded by: Maram Ahmed                      #
     #########################################################
 
- if roll <= 0.7 or roll >= 359.5:  # 0.7, 259.5
-        if pitch <= 0.7 or pitch >= 359.5:
+ if roll <= 1 or roll >= 359:  # 1, 359
+        if pitch <= 1 or pitch >= 359:
             Rover.worldmap[y_world, x_world, 2] += 255
             Rover.worldmap[obstacle_y_world, obstacle_x_world, 0] += 255
             Rover.worldmap[rock_y_world, rock_x_world, 1] += 255
-
+s
 
     # 8) Convert rover-centric pixel positions to polar coordinates
     # Update Rover pixel distances and angles
