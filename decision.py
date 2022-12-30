@@ -81,7 +81,7 @@ def decision_step(Rover):
 # Check if the rover is making circle
 def check_circle(Rover):
     if Rover.steer == 15 and Rover.vel > 0.5:
-        if Rover.circle_time > 50:
+        if Rover.circle_time > 5:
             Rover.circle_time = 0
             Rover.is_stuck = True
             Rover.stuck_time = Rover.total_time
@@ -92,9 +92,9 @@ def check_circle(Rover):
             Rover.is_stuck = False
             Rover.stuck_time = 0
         else:
-            Rover.circle_time += 0.2
+            Rover.circle_time += 1
     elif Rover.steer == -15 and Rover.vel > 0.5:
-        if Rover.circle_time > 50:
+        if Rover.circle_time > 5:
             Rover.circle_time = 0
             Rover.is_stuck = True
             Rover.stuck_time = Rover.total_time
@@ -105,4 +105,4 @@ def check_circle(Rover):
             Rover.is_stuck = False
             Rover.stuck_time = 0
         else:
-            Rover.circle_time += 0.2
+            Rover.circle_time += 1
