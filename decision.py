@@ -14,9 +14,7 @@ def decision_step(Rover):
     #######################################################################################################################################################
     
     
-    # Only apply left wall hugging when out of the starting point (after 10s)
-    # to avoid getting stuck in a circle
-    if Rover.total_time > 10:
+   
         
 
     # Check if we have vision data to make decisions with
