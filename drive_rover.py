@@ -38,8 +38,21 @@ ground_truth_3d = np.dstack((ground_truth*0, ground_truth*255, ground_truth*0)).
 # Define RoverState() class to retain rover state parameters
 class RoverState():
     def __init__(self):
+
+        ####################################
+        #             Omar Osama           #
+        ####################################
+        self.home = None  # Mark the initial home pos
+        self.is_done = False  # Indicating that the rover has picked all rocks
         self.start_time = None # To record the start time of navigation
         self.total_time = None # To record total duration of naviagation
+        self.stuck_time = 0 # To record moment that got stuck
+        self.rock_time = 0 # To record moment that started to go for the near rock sample
+        self.samples_angles = None  # Angles of rock sample pixels
+        self.samples_dists = None  # Distances of rock sample pixels
+        self.mapped = None
+        ####################################
+
         self.img = None # Current camera image
         self.pos = None # Current position (x, y)
         self.yaw = None # Current yaw angle
