@@ -29,12 +29,12 @@ def color_thresh(img, rgb_thresh=(160, 160, 160), flag="navigable_terrain"):
 #           Coded by: Habiba ahmed                       #
 #########################################################
 def rock_thresh(img):
-    # Convert BGR to HSV
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV, 3)
+    # Convert RGB to HSV
+    hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
     #The mask converts the RGB values to HSV vales to detect rocks more accurately.HSV based color space is more accurate compared to RGB color space in autonomous system.
     # Define range of yellow colors in HSV
-    lower_yellow = np.array([10, 100, 100], dtype='uint8')
-    upper_yellow = np.array([255, 255, 255], dtype='uint8')
+    lower_yellow = np.array([24 - 5, 100, 100], dtype='uint8')
+    upper_yellow = np.array([24 + 5, 255, 255], dtype='uint8')
     
     # Threshold the HSV image to get only yellow colors
     mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
