@@ -69,14 +69,10 @@ def decision_step(Rover):
                     Rover.brake = Rover.brake_set
                     Rover.steer = 0
                     Rover.mode.append('stop')
-                    
-    #####################################################################################################################################################
-    #                                                                                                                                                   #
-    #####################################################################################################################################################
-    
-    
-        # If we're already in "stop" mode then make different decisions
-        elif Rover.mode == 'stop':
+    #########################################################
+    #           Coded by: Habiba ahmed                       #
+    #########################################################
+        elif Rover.mode[-1] == 'stop':
             # If we're in stop mode but still moving keep braking
             if Rover.vel > 0.2:
                 Rover.throttle = 0
@@ -90,18 +86,22 @@ def decision_step(Rover):
                     # Release the brake to allow turning
                     Rover.brake = 0
                     # Turn range is +/- 15 degrees, when stopped the next line will induce 4-wheel turning
-                    Rover.steer = -15 # Could be more clever here about which way to turn
-                # If we're stopped but see sufficient navigable terrain in front then go!
+                    # Since hugging left wall steering should be to the right:
+                    Rover.steer = -15
+                # If we're stopped but see sufficient navigable terrain in front then go
                 if len(Rover.nav_angles) >= Rover.go_forward:
                     # Set throttle back to stored value
                     Rover.throttle = Rover.throttle_set
                     # Release the brake
                     Rover.brake = 0
                     # Set steer to mean angle
-                    Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -15, 15)
-                    Rover.mode = 'forward'
-    # Just to make the rover do something 
-    # even if no modifications have been made to the code
+                    # Hug left wall by setting the steer angle slightly to the left
+                    Rover.steer = np.clip(np.mean(Rover.nav_angles * 180 / np.pi), -15, 15)
+                    Rover.mode.pop()  # returns to previous mode                
+    #####################################################################################################################################################
+    #                                                                                                                                                   #
+    #####################################################################################################################################################
+
     else:
         Rover.throttle = Rover.throttle_set
         Rover.steer = 0
@@ -115,34 +115,4 @@ def decision_step(Rover):
 
 
 
-#########################################################
-#           Coded by: Habiba ahmed                       #
-#########################################################
-# Check if the rover is making circle
-def check_circle(Rover):
-    if Rover.steer == 15 and Rover.vel > 0.5:
-        if Rover.circle_time > 5:
-            Rover.circle_time = 0
-            Rover.is_stuck = True
-            Rover.stuck_time = Rover.total_time
-            Rover.last_mode = Rover.mode  
-            Rover.mode = 'unstuck'
-        elif Rover.steer != 15:
-            Rover.circle_time = 0
-            Rover.is_stuck = False
-            Rover.stuck_time = 0
-        else:
-            Rover.circle_time += 1
-    elif Rover.steer == -15 and Rover.vel > 0.5:
-        if Rover.circle_time > 5:
-            Rover.circle_time = 0
-            Rover.is_stuck = True
-            Rover.stuck_time = Rover.total_time
-            Rover.last_mode = Rover.mode  
-            Rover.mode = 'unstuck'
-        elif Rover.steer != -15:
-            Rover.circle_time = 0
-            Rover.is_stuck = False
-            Rover.stuck_time = 0
-        else:
-            Rover.circle_time += 1
+
