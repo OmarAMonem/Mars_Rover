@@ -248,7 +248,7 @@ def perception_step(Rover):
 
     #Saving polar coordinates to rover object
     Rover.nav_dists, Rover.nav_angles = to_polar_coords(x_pixel, y_pixel)
-    _, Rover.rock_angles = to_polar_coords(rock_x, rock_y)
+    samples_dists, Rover.samples_angles = to_polar_coords(rock_x, rock_y)
 
     #########################################################
     #                                                       #
