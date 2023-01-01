@@ -1,5 +1,5 @@
 import numpy as np
-
+from perception import to_polar_coords
 
 # This is where you can build a decision tree for determining throttle, brake and steer 
 # commands based on the output of the perception_step() function
@@ -26,7 +26,7 @@ def decision_step(Rover):
                 # note down home
                 Rover.home = Rover.pos
 
-            if Rover.samples_collected >= 3 and Rover.mapped > 50:
+            if Rover.samples_collected >= 5 and Rover.mapped > 90:
                 Rover.mode.append('home')
                         
 
@@ -69,6 +69,24 @@ def decision_step(Rover):
                     Rover.brake = Rover.brake_set
                     Rover.steer = 0
                     Rover.mode.append('stop')
+
+    #########################################################
+    #           Coded by: Omar Osama                        #
+    #########################################################
+        elif Rover.mode[-1] == 'home':
+            dist, angles = to_polar_coords(Rover.home[0] - Rover.pos[0],
+                                            Rover.home[1] - Rover.pos[1])
+            if dist > 2:
+                Rover.steer = np.clip(np.mean(angles * 180 / np.pi), -15, 15)
+            else:
+                Rover.is_done = True
+                Rover.throttle = 0
+                Rover.brake = Rover.brake_set
+                Rover.steer = 0
+    #########################################################
+    #                                                       #
+    #########################################################
+                    
     #########################################################
     #           Coded by: Habiba ahmed                       #
     #########################################################
