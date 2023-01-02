@@ -85,8 +85,44 @@ def decision_step(Rover):
                 Rover.brake = Rover.brake_set
                 Rover.steer = 0
     #########################################################
-    #                                                       #
+    #           Coded by: Maram Ahmed                       #
     #########################################################
+        elif Rover.mode[-1] == 'rock':
+            # Steer torwards the sample
+            mean = np.mean(Rover.samples_angles * 180 / np.pi)
+            if not np.isnan(mean):
+                Rover.steer = np.clip(mean, -15, 15)
+            else:
+                Rover.mode.pop() # rock is not in sight anymore. Go to previous state
+
+            # if 20 sec passed and it's still looking for the rock, give up and go back to previous mode
+            if Rover.total_time - Rover.rock_time > 20:
+                Rover.mode.pop()  # returns to previous state
+
+            # stop when close enough to pick up the sample
+            if Rover.near_sample:
+                # Set mode to "stop" and hit the brakes!
+                Rover.throttle = 0
+                # Set brake to stored brake value
+                Rover.brake = Rover.brake_set
+
+            # if got stuck go to stuck mode
+            elif Rover.vel <= 0 and Rover.total_time - Rover.stuck_time > 10:
+                Rover.throttle = 0
+                # Set brake to stored brake value
+                Rover.brake = Rover.brake_set
+                Rover.steer = 0
+                Rover.mode.append('stuck')
+                Rover.stuck_time = Rover.total_time
+            else:
+                # Approach slowly
+                slow_speed = Rover.max_vel / 2
+                if Rover.vel < slow_speed:
+                    Rover.throttle = 0.1
+                    Rover.brake = 0
+                else:  # Else brake
+                    Rover.throttle = 0
+                    Rover.brake = Rover.brake_set/2
                     
     #########################################################
     #           Coded by: Habiba ahmed                       #
