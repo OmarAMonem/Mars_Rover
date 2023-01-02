@@ -27,7 +27,10 @@ def decision_step(Rover):
                 Rover.home = Rover.pos
 
             if Rover.samples_collected >= 5 and Rover.mapped > 90:
-                Rover.mode.append('home')
+                dist, angles = to_polar_coords(Rover.home[0] - Rover.pos[0],
+                                                Rover.home[1] - Rover.pos[1])
+                if dist < 10:
+                    Rover.mode.append('home')
                         
 
             # if sample rock on sight (in the left side only) and relatively close
@@ -74,8 +77,6 @@ def decision_step(Rover):
     #           Coded by: Omar Osama                        #
     #########################################################
         elif Rover.mode[-1] == 'home':
-            dist, angles = to_polar_coords(Rover.home[0] - Rover.pos[0],
-                                            Rover.home[1] - Rover.pos[1])
             if dist > 2:
                 Rover.steer = np.clip(np.mean(angles * 180 / np.pi), -15, 15)
             else:
