@@ -74,6 +74,31 @@ def decision_step(Rover):
                     Rover.mode.append('stop')
 
     #########################################################
+    #           Coded by: Shiry Ezzat                       #
+    #########################################################
+                
+                # If we're already in "stuck". Stay here for 1 sec
+        elif Rover.mode[-1] == 'stuck':
+            # if 1 sec passed go back to previous mode
+            if Rover.total_time - Rover.stuck_time > 1:
+                # Set throttle back to stored value
+                Rover.throttle = Rover.throttle_set
+                # Release the brake
+                Rover.brake = 0
+                # Set steer to mean angle
+                # Hug left wall by setting the steer angle slightly to the left
+                Rover.steer = np.clip(np.mean((Rover.nav_angles+offset) * 180 / np.pi), -15, 15)
+                Rover.mode.pop() # returns to previous mode
+            # Now we're stopped and we have vision data to see if there's a path forward
+            else:
+                Rover.throttle = 0
+                # Release the brake to allow turning
+                Rover.brake = 0
+                # Turn range is +/- 15 degrees, when stopped the next line will induce 4-wheel turning
+                # Since hugging left wall steering should be to the right:
+                Rover.steer = -15
+
+    #########################################################
     #           Coded by: Omar Osama                        #
     #########################################################
         elif Rover.mode[-1] == 'home':
