@@ -157,7 +157,7 @@ def create_output_images(Rover):
                 cv2.FONT_HERSHEY_COMPLEX, 0.4, (255, 255, 255), 1)
         cv2.putText(map_add, "Rover is Home", (0, 160),
                 cv2.FONT_HERSHEY_COMPLEX, 0.4, (255, 255, 255), 1)
-        cv2.putText(map_add, "Time: " +str(Rover.stop_time), (0, 175),
+        cv2.putText(map_add, "Time: " +str(np.round(Rover.stop_time, 1)), (0, 175),
                 cv2.FONT_HERSHEY_COMPLEX, 0.4, (255, 255, 255), 1)
     # Convert map and vision image to base64 strings for sending to server
     pil_img = Image.fromarray(map_add.astype(np.uint8))
