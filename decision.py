@@ -76,7 +76,6 @@ def decision_step(Rover):
     #########################################################
     #           Coded by: Shiry Ezzat                       #
     #########################################################
-                
                 # If we're already in "stuck". Stay here for 1 sec
         elif Rover.mode[-1] == 'stuck':
             # if 1 sec passed go back to previous mode
@@ -87,7 +86,7 @@ def decision_step(Rover):
                 Rover.brake = 0
                 # Set steer to mean angle
                 # Hug left wall by setting the steer angle slightly to the left
-                Rover.steer = np.clip(np.mean((Rover.nav_angles+offset) * 180 / np.pi), -15, 15)
+                Rover.steer = np.clip(np.mean((Rover.nav_angles) * 180 / np.pi), -15, 15)
                 Rover.mode.pop() # returns to previous mode
             # Now we're stopped and we have vision data to see if there's a path forward
             else:
