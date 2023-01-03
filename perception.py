@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
- 
+
 # Identify pixels above the threshold
 # Threshold of RGB > 160 does a nice job of identifying ground pixels only
 def color_thresh(img, rgb_thresh=(160, 160, 160), flag="navigable_terrain"):
@@ -29,12 +29,12 @@ def color_thresh(img, rgb_thresh=(160, 160, 160), flag="navigable_terrain"):
 #           Coded by: Habiba ahmed                       #
 #########################################################
 def rock_thresh(img):
-    # Convert RGB to HSV
+    # Convert BGR to HSV
     hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
     #The mask converts the RGB values to HSV vales to detect rocks more accurately.HSV based color space is more accurate compared to RGB color space in autonomous system.
     # Define range of yellow colors in HSV
-    lower_yellow = np.array([24 - 5, 100, 100], dtype='uint8')
-    upper_yellow = np.array([24 + 5, 255, 255], dtype='uint8')
+    lower_yellow = np.array([24-5, 100, 100], dtype='uint8')
+    upper_yellow = np.array([24+5, 255, 255], dtype='uint8')
     
     # Threshold the HSV image to get only yellow colors
     mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
@@ -107,6 +107,16 @@ def perspect_transform(img, src, dst):
     return warped
 
 
+######################################################
+##               Coded by: Omar Osama               ##
+######################################################
+def impose_range(xpix, ypix, range=80):
+    dist = np.sqrt(xpix**2 + ypix**2)
+    return xpix[dist < range], ypix[dist < range]
+######################################################
+##                                                  ##
+######################################################
+
 # Apply the above functions in succession and update the Rover state accordingly
 def perception_step(Rover):
     # Perform perception steps to update Rover()
@@ -118,7 +128,7 @@ def perception_step(Rover):
     #########################################################
     image = Rover.img       # getting image from rover camera
     dst_size = 5            # setting destination size to 5 pixels
-    scale = 2 * dst_size    # scale equal to twice the destination size 
+    scale = 14              # scale equal to twice the destination size  ## Updated by Omar Osama
     bottom_offset = 6       
     source = np.float32([[14, 140], [301, 140], [200, 96], [118, 96]]) # grid coordinates from calibration image
 
@@ -188,6 +198,12 @@ def perception_step(Rover):
     x_pixel, y_pixel = rover_coords(navigable_map)
     obs_xpixel, obs_ypixel = rover_coords(obstacle_map)
     rock_x, rock_y = rover_coords(rock_map)
+
+    ######################################################
+    ##              Updated by Omar Osama               ##
+    ######################################################
+    x_pixel, y_pixel = impose_range(x_pixel, y_pixel, 95)
+    obs_xpixel, obs_ypixel = impose_range(obs_xpixel, obs_ypixel, 45)
     
     #########################################################
     #                                                       #
@@ -227,11 +243,11 @@ def perception_step(Rover):
     #########################################################
 
     #Draw worldmap only if roll and pitch are within range to prevent errors
-    if roll <= 1 or roll >= 359:  # 1, 359
-        if pitch <= 1 or pitch >= 359:
-            Rover.worldmap[y_world, x_world, 2] += 255
-            Rover.worldmap[obstacle_y_world, obstacle_x_world, 0] += 255
-            Rover.worldmap[rock_y_world, rock_x_world, 1] += 255
+    if roll <= 0.7 or roll >= 359.3:  # 0.7, 359.3 
+        if pitch <= 0.7 or pitch >= 359.3:
+            Rover.worldmap[y_world, x_world, 2] = 255
+            Rover.worldmap[obstacle_y_world, obstacle_x_world, 0] = 255
+            Rover.worldmap[rock_y_world, rock_x_world, 1] = 255
 
     #########################################################
     #                                                       #
@@ -248,7 +264,7 @@ def perception_step(Rover):
 
     #Saving polar coordinates to rover object
     Rover.nav_dists, Rover.nav_angles = to_polar_coords(x_pixel, y_pixel)
-    samples_dists, Rover.samples_angles = to_polar_coords(rock_x, rock_y)
+    Rover.samples_dists, Rover.samples_angles = to_polar_coords(rock_x, rock_y)  ## Updated by Omar Osama
 
     #########################################################
     #                                                       #

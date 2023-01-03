@@ -13,9 +13,21 @@ def decision_step(Rover):
     #                                                           Edited by: Engy Mohamed                                                                   #
     #######################################################################################################################################################
     
-    
-   
-        
+    #########################################################
+    #           Coded by: Omar Osama                        #
+    #########################################################
+    # offset in rad used to hug the left wall.
+    offset = 0
+    # Only apply left wall hugging when out of the starting point (after 10s)
+    # to avoid getting stuck in a circle
+    if Rover.total_time > 10:
+        # Steering proportional to the deviation results in
+        # small offsets on straight lines and
+        # large values in turns and open areas
+        offset = 0.4 * np.std(Rover.nav_angles)
+    #########################################################
+    #                                                       #
+    #########################################################
 
     # Check if we have vision data to make decisions with
     if Rover.nav_angles is not None:
@@ -27,14 +39,13 @@ def decision_step(Rover):
                 Rover.home = Rover.pos
 
             if Rover.samples_collected >= 5 and Rover.mapped > 90:
-                dist, angles = to_polar_coords(Rover.home[0] - Rover.pos[0],
-                                                Rover.home[1] - Rover.pos[1])
-                if dist < 10:
+                Rover.home_dist, _ = to_polar_coords((Rover.home[0] - Rover.pos[0]),(Rover.home[1] - Rover.pos[1]))
+                if Rover.home_dist < 5:
                     Rover.mode.append('home')
                         
 
             # if sample rock on sight (in the left side only) and relatively close
-            if Rover.samples_angles is not None and np.mean(Rover.samples_angles) > -0.4 and np.min(Rover.samples_dists) < 40:
+            if Rover.samples_angles is not None and np.mean(Rover.samples_angles) > -0.3 and np.min(Rover.samples_dists) < 50:
                 # Rover.steer = np.clip(np.mean(Rover.samples_angles * 180 / np.pi), -15, 15)
                 Rover.rock_time = Rover.total_time
                 Rover.mode.append('rock')
@@ -62,7 +73,7 @@ def decision_step(Rover):
                 # Set steering to average angle clipped to the range +/- 15
                 # Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -15, 15)
                 # Hug left wall by setting the steer angle slightly to the left
-                Rover.steer = np.clip(np.mean((Rover.nav_angles) * 180 / np.pi), -15, 15)
+                Rover.steer = np.clip(np.mean((Rover.nav_angles+offset) * 180 / np.pi), -15, 15)
 
             # If there's a lack of navigable terrain pixels then go to 'stop' mode
             elif len(Rover.nav_angles) < Rover.stop_forward or Rover.vel <= 0:
@@ -86,7 +97,7 @@ def decision_step(Rover):
                 Rover.brake = 0
                 # Set steer to mean angle
                 # Hug left wall by setting the steer angle slightly to the left
-                Rover.steer = np.clip(np.mean((Rover.nav_angles) * 180 / np.pi), -15, 15)
+                Rover.steer = np.clip(np.mean((Rover.nav_angles+offset) * 180 / np.pi), -15, 15)
                 Rover.mode.pop() # returns to previous mode
             # Now we're stopped and we have vision data to see if there's a path forward
             else:
@@ -101,13 +112,12 @@ def decision_step(Rover):
     #           Coded by: Omar Osama                        #
     #########################################################
         elif Rover.mode[-1] == 'home':
-            if dist > 2:
-                Rover.steer = np.clip(np.mean(angles * 180 / np.pi), -15, 15)
-            else:
-                Rover.is_done = True
-                Rover.throttle = 0
-                Rover.brake = Rover.brake_set
-                Rover.steer = 0
+            Rover.is_done = True
+            if Rover.stop_time is None:
+                Rover.stop_time = Rover.total_time
+            Rover.throttle = 0
+            Rover.brake = Rover.brake_set
+            Rover.steer = 0
     #########################################################
     #           Coded by: Maram Ahmed                       #
     #########################################################
@@ -142,11 +152,11 @@ def decision_step(Rover):
                 # Approach slowly
                 slow_speed = Rover.max_vel / 2
                 if Rover.vel < slow_speed:
-                    Rover.throttle = 0.1
+                    Rover.throttle = 0.2
                     Rover.brake = 0
                 else:  # Else brake
                     Rover.throttle = 0
-                    Rover.brake = Rover.brake_set/2
+                    Rover.brake = 1
                     
     #########################################################
     #           Coded by: Habiba ahmed                       #
@@ -175,7 +185,8 @@ def decision_step(Rover):
                     Rover.brake = 0
                     # Set steer to mean angle
                     # Hug left wall by setting the steer angle slightly to the left
-                    Rover.steer = np.clip(np.mean(Rover.nav_angles * 180 / np.pi), -15, 15)
+                    offset = 12
+                    Rover.steer = np.clip(np.mean(Rover.nav_angles * 180 / np.pi) + offset, -15, 15)
                     Rover.mode.pop()  # returns to previous mode                
     #####################################################################################################################################################
     #                                                                                                                                                   #

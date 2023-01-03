@@ -29,7 +29,7 @@ app = Flask(__name__)
 # Read in ground truth map and create 3-channel green version for overplotting
 # NOTE: images are read in by default with the origin (0, 0) in the upper left
 # and y-axis increasing downward.
-ground_truth = mpimg.imread('../calibration_images/map_bw.png')
+ground_truth = mpimg.imread('./calibration_images/map_bw.png')
 # This next line creates arrays of zeros in the red and blue channels
 # and puts the map into the green channel.  This is why the underlying 
 # map output looks green in the display image
@@ -43,8 +43,10 @@ class RoverState():
         #             Omar Osama           #
         ####################################
         self.home = None  # Mark the initial home pos
-        self.is_done = False  # Indicating that the rover has picked all rocks
+        self.home_dist = None
+        self.is_done = False
         self.start_time = None # To record the start time of navigation
+        self.stop_time = None
         self.total_time = None # To record total duration of naviagation
         self.stuck_time = 0 # To record moment that got stuck
         self.rock_time = 0 # To record moment that started to go for the near rock sample
@@ -65,16 +67,16 @@ class RoverState():
         self.nav_angles = None # Angles of navigable terrain pixels
         self.nav_dists = None # Distances of navigable terrain pixels
         self.ground_truth = ground_truth_3d # Ground truth worldmap
-        self.mode = 'forward' # Current mode (can be forward or stop)
-        self.throttle_set = 0.2 # Throttle setting when accelerating
+        self.mode = ['forward'] # Current mode (can be forward or stop)
+        self.throttle_set = 0.4 # Throttle setting when accelerating
         self.brake_set = 10 # Brake setting when braking
         # The stop_forward and go_forward fields below represent total count
         # of navigable terrain pixels.  This is a very crude form of knowing
         # when you can keep going and when you should stop.  Feel free to
         # get creative in adding new fields or modifying these!
-        self.stop_forward = 50 # Threshold to initiate stopping
+        self.stop_forward = 100 # Threshold to initiate stopping
         self.go_forward = 500 # Threshold to go forward again
-        self.max_vel = 2 # Maximum velocity (meters/second)
+        self.max_vel = 2.5 # Maximum velocity (meters/second)
         # Image output from perception step
         # Update this image to display your intermediate analysis steps
         # on screen in autonomous mode
@@ -126,7 +128,7 @@ def telemetry(sid, data):
             Rover = decision_step(Rover)
 
             # Create output images to send to server
-            out_image_string1, out_image_string2 = create_output_images(Rover)
+            out_image_string1, out_image_string2, Rover.mapped = create_output_images(Rover)
 
             # The action step!  Send commands to the rover!
  
